@@ -5,7 +5,10 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 
 import de.proben.probenapijpa.util.Constants;
@@ -15,37 +18,40 @@ public class Probe {
 
 	private static long idCounter = 1;
 	@Id
-	private Long probeId;
+	private Long id;
 	private LocalDateTime zeitpunkt;
 	private Integer messwert;
+	@Enumerated(EnumType.STRING)
+	@Column(length = 8) // FRAGLICH hat 8 Buchstaben!
 	private Ergebnis ergebnis;
 
 	public Probe() {
-
+		id = idCounter++;
+		this.zeitpunkt = LocalDateTime.now();
 	}
 
 	public Probe(LocalDateTime time) {
-		probeId = idCounter++;
+		id = idCounter++;
 		this.zeitpunkt = time;
 	}
 
 	public Probe(LocalDateTime time, Integer messwert) {
 		testMesswert(messwert);
 
-		probeId = idCounter++;
+		id = idCounter++;
 		this.zeitpunkt = time;
 		this.messwert = messwert;
 		berechneErgebnis();
 	}
 
 	public Probe(Long id, LocalDateTime time) {
-		this.probeId = id;
+		this.id = id;
 		idCounter = id;
 		this.zeitpunkt = time;
 	}
 
 	public Probe(Long id, LocalDateTime time, Integer mw, Ergebnis erg) {
-		this.probeId = id;
+		this.id = id;
 		idCounter = id;
 		this.zeitpunkt = time;
 		this.messwert = mw;
@@ -66,8 +72,8 @@ public class Probe {
 			formatKilosStr = formatKilos.format(messwert);
 		}
 
-		return String.format("[id=%3d, zeit=%8s, messwert=%5s, ergebnis=%s",
-				probeId, zeitpunkt.format(formatter), formatKilosStr, ergebnis + "]");
+		return String.format("[id=%3d, zeit=%8s, messwert=%5s, ergebnis=%s", id,
+				zeitpunkt.format(formatter), formatKilosStr, ergebnis + "]");
 //		return "[id=" + probeId + ", zeit="
 //				+ zeitpunkt.truncatedTo(ChronoUnit.MINUTES)
 //						.toLocalDate()
@@ -96,11 +102,11 @@ public class Probe {
 	}
 
 	public Long getProbeId() {
-		return probeId;
+		return id;
 	}
 
 	public void setProbeId(Long probeId) {
-		this.probeId = probeId;
+		this.id = probeId;
 	}
 
 	public LocalDateTime getZeitpunkt() {
