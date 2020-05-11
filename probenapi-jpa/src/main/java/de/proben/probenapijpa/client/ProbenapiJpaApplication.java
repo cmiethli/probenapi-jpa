@@ -71,6 +71,9 @@ public class ProbenapiJpaApplication {
 			repository.updateMesswert(557, 3L);
 			log.info(repository.findById(3L)
 					.toString());
+			log.info("" + pv.addMesswert(5, 7777));
+			log.info(repository.findById(5L)
+					.toString());
 		};
 
 	}

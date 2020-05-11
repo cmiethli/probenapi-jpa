@@ -109,6 +109,7 @@ public class Probe {
 	}
 
 	public void setMesswert(Integer messwert) {
+		testMesswert(messwert);
 		this.messwert = messwert;
 		berechneErgebnis();
 	}

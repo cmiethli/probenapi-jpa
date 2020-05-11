@@ -2,15 +2,18 @@ package de.proben.probenapijpa.api;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import de.proben.probenapijpa.persistence.Probe;
 import de.proben.probenapijpa.persistence.Probe.Ergebnis;
@@ -75,13 +78,20 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 	}
 
 	@Override
+	@Transactional
 	public boolean addMesswert(long probeId, Integer messwert) {
-		int i = 1;// repository.addMesswert(messwert, probeId);
-
-//	TypedQuery<Probe> query = em
-//	.createQuery("Probe.findByMesswert", Probe.class)
-//	.setParameter("messwert", 0);
-		return i == 1 ? true : false;
+		Optional<Probe> probeOpt = repository.findById(probeId);
+		boolean isAdded = false;
+		if (probeOpt.isPresent()) {
+			Probe p = probeOpt.get();
+			if (p.getMesswert() instanceof Integer) {
+// messwert schon vorhanden >> keine Aktion
+			} else {
+				p.setMesswert(messwert);
+				isAdded = updateProbe(messwert, probeId, p.getErgebnis());
+			}
+		}
+		return isAdded;
 	}
 
 //	######### Helper Meths ###########################
@@ -98,5 +108,16 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 							.compareTo(p1.getZeitpunkt()));
 		}
 		return probenSorted.collect(Collectors.toList());
+	}
+
+	private boolean updateProbe(Integer messwert, long probeId,
+			Ergebnis ergebnis) {
+		Query probe = em
+				.createQuery("UPDATE Probe p " + "SET p.messwert = :mw, "
+						+ " p.ergebnis = :erg WHERE p.id = :id")
+				.setParameter("mw", messwert)
+				.setParameter("erg", ergebnis)
+				.setParameter("id", probeId);
+		return probe.executeUpdate() == 1 ? true : false;
 	}
 }

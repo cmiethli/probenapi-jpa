@@ -3,8 +3,6 @@ package de.proben.probenapijpa.api;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.springframework.data.jpa.repository.Query;
-
 import de.proben.probenapijpa.persistence.Probe;
 
 /**
@@ -86,6 +84,5 @@ public interface ProbenVerwalten {
 	 *         false falls die Proben schon einen Messwert hatte oder wenn die
 	 *         Probe nicht existiert
 	 */
-	@Query(value = "SELECT * FROM probe WHERE probe.ergebnis= 'NEGATIV' ", nativeQuery = true)
 	boolean addMesswert(long probeId, Integer messwert);
 }
