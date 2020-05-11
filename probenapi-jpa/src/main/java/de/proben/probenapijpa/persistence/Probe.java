@@ -9,6 +9,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import de.proben.probenapijpa.util.Constants;
@@ -16,9 +18,11 @@ import de.proben.probenapijpa.util.Constants;
 @Entity
 public class Probe {
 
-	private static long idCounter = 1;
 	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@Column(columnDefinition = "TIMESTAMP", nullable = false)
 	private LocalDateTime zeitpunkt;
 	private Integer messwert;
 	@Enumerated(EnumType.STRING)
@@ -26,36 +30,19 @@ public class Probe {
 	private Ergebnis ergebnis;
 
 	public Probe() {
-		id = idCounter++;
 		this.zeitpunkt = LocalDateTime.now();
 	}
 
 	public Probe(LocalDateTime time) {
-		id = idCounter++;
 		this.zeitpunkt = time;
 	}
 
 	public Probe(LocalDateTime time, Integer messwert) {
 		testMesswert(messwert);
 
-		id = idCounter++;
 		this.zeitpunkt = time;
 		this.messwert = messwert;
 		berechneErgebnis();
-	}
-
-	public Probe(Long id, LocalDateTime time) {
-		this.id = id;
-		idCounter = id;
-		this.zeitpunkt = time;
-	}
-
-	public Probe(Long id, LocalDateTime time, Integer mw, Ergebnis erg) {
-		this.id = id;
-		idCounter = id;
-		this.zeitpunkt = time;
-		this.messwert = mw;
-		this.ergebnis = erg;
 	}
 
 	@Override
