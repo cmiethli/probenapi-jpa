@@ -23,5 +23,5 @@ public interface ProbeRepository extends CrudRepository<Probe, Long> {
 	@Modifying
 	@Transactional
 	@Query("UPDATE Probe p SET p.messwert = :mw  WHERE p.id = :id")
-	int addMesswert(@Param("mw") Integer mw, @Param("id") Long id);
+	int updateMesswert(@Param("mw") Integer mw, @Param("id") Long id);
 }
