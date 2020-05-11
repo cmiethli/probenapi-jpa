@@ -5,6 +5,10 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,9 +30,16 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 	@Autowired
 	private ProbeRepository repository;
 
+	@PersistenceContext
+	private EntityManager em;
+
 	@Override
 	public List<Probe> findAll() {
-		return repository.findAll();
+
+		TypedQuery<Probe> query = em.createQuery("SELECT k FROM Probe k",
+				Probe.class);
+		return query.getResultList();
+//		return repository.findAll();
 	}
 
 	@Override
@@ -66,6 +77,10 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 	@Override
 	public boolean addMesswert(long probeId, Integer messwert) {
 		int i = 1;// repository.addMesswert(messwert, probeId);
+
+//	TypedQuery<Probe> query = em
+//	.createQuery("Probe.findByMesswert", Probe.class)
+//	.setParameter("messwert", 0);
 		return i == 1 ? true : false;
 	}
 
