@@ -108,4 +108,9 @@ public class ProbenVerwaltenInMem implements ProbenVerwalten {
 		}
 		return probenSorted.collect(Collectors.toList());
 	}
+
+	@Override
+	public boolean updateMesswert(long probeId, Integer messwert) {
+		return false;
+	}
 }

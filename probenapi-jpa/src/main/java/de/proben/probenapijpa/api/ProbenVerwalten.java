@@ -85,4 +85,15 @@ public interface ProbenVerwalten {
 	 *         Probe nicht existiert
 	 */
 	boolean addMesswert(long probeId, Integer messwert);
+
+	/**
+	 * Fuegt der angegebenen Probe einen Messwert zu. Die Probe darf dabei schon
+	 * einen Messwert haben.
+	 * 
+	 * @param probeId  Eindeutige id der Probe
+	 * @param messwert messwert der hinzugefuegt werden soll
+	 * @return true falls die Probe existiert<br>
+	 *         false falls die Probe nicht existiert
+	 */
+	boolean updateMesswert(long probeId, Integer messwert);
 }

@@ -94,6 +94,19 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 		return isAdded;
 	}
 
+	@Override
+	@Transactional
+	public boolean updateMesswert(long probeId, Integer messwert) {
+		Optional<Probe> probeOpt = repository.findById(probeId);
+		boolean isAdded = false;
+		if (probeOpt.isPresent()) {
+			Probe p = probeOpt.get();
+			p.setMesswert(messwert);
+			isAdded = updateProbe(messwert, probeId, p.getErgebnis());
+		}
+		return isAdded;
+	}
+
 //	######### Helper Meths ###########################
 	static List<Probe> timeSortedPackageScope(boolean isAeltesteZuerst,
 			List<Probe> proben) {
@@ -120,4 +133,5 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 				.setParameter("id", probeId);
 		return probe.executeUpdate() == 1 ? true : false;
 	}
+
 }
