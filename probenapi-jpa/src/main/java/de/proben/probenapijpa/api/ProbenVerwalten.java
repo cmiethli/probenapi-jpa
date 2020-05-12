@@ -96,4 +96,6 @@ public interface ProbenVerwalten {
 	 *         false falls die Probe nicht existiert
 	 */
 	boolean updateMesswert(long probeId, Integer messwert);
+
+	void truncateTableProbe();
 }

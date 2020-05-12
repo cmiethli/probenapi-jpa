@@ -113,4 +113,8 @@ public class ProbenVerwaltenInMem implements ProbenVerwalten {
 	public boolean updateMesswert(long probeId, Integer messwert) {
 		return false;
 	}
+
+	@Override
+	public void truncateTableProbe() {
+	}
 }

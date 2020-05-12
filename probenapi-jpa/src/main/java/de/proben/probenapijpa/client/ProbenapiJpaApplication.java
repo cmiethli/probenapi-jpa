@@ -1,7 +1,9 @@
 package de.proben.probenapijpa.client;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Optional;
+import java.time.LocalTime;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,8 +18,8 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 import de.proben.probenapijpa.api.ProbenVerwalten;
 import de.proben.probenapijpa.persistence.Probe;
-import de.proben.probenapijpa.persistence.Probe.Ergebnis;
 import de.proben.probenapijpa.persistence.ProbeRepository;
+import de.proben.probenapijpa.util.Constants;
 
 @SpringBootApplication(scanBasePackages = "de.proben.probenapijpa.config")
 @EnableJpaRepositories(basePackageClasses = ProbeRepository.class)
@@ -26,6 +28,7 @@ public class ProbenapiJpaApplication {
 
 	private static final Logger log = LoggerFactory
 			.getLogger(ProbenapiJpaApplication.class);
+	private static Probe probeOhneMw;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProbenapiJpaApplication.class);
@@ -38,47 +41,92 @@ public class ProbenapiJpaApplication {
 	@Bean
 	public CommandLineRunner demo(ProbeRepository repository) {
 		return (args) -> {
-			pv.addProbe(new Probe(LocalDateTime.now(), 0));
-			pv.addProbe(new Probe(LocalDateTime.now(), 10000));
-			pv.addProbe(new Probe(LocalDateTime.now(), 5000));
-			pv.addProbe(new Probe(LocalDateTime.now()));
-			pv.addProbe(new Probe());
-
-			// fetch all Proben
-			log.info("Probes found with findAll():");
-			log.info("-------------------------------");
-			pv.findAll()
-					.forEach(p -> log.info(p.toString()));
-
-			log.info("");
-
-			// fetch an individual customer by ID
-			long id = 1;
-			Optional<Probe> customer = repository.findById(id);
-			customer.ifPresentOrElse(p -> {
-				log.info("Probe found with findById(1L):");
-				log.info("--------------------------------");
-				log.info(p.toString());
-				log.info("");
-			}, () -> log.info("no Probe with id: " + id + " found\n"));
-
-			repository.findByErgebnis(Ergebnis.NEGATIV)
-					.forEach(p -> log.info(p.toString()));
-
-			log.info("");
-//			log.info(repository.xxx()
-//					.toString());
-			repository.updateMesswert(557, 3L);
-			log.info(repository.findById(3L)
-					.toString());
-			log.info("" + pv.addMesswert(5, 7777));
-			log.info(repository.findById(5L)
-					.toString());
-			log.info("" + pv.updateMesswert(6, 5555));
-			log.info(repository.findById(6L)
-					.toString());
+			alleProbenAusDbLoeschenUndIdGleich1(pv);
+			testProbenVerwalten(pv);
 		};
 
+	}
+
+	private static void testProbenVerwalten(ProbenVerwalten proVerwInstance) {
+		generateProben(proVerwInstance);
+
+		String name = proVerwInstance.getClass()
+				.getSimpleName();
+		System.out.println("##### " + name + ": findAll() ##########");
+		proVerwInstance.findAll()
+				.forEach(System.out::println);
+
+		System.out.println();
+		System.out.println(
+				"##### " + name + ": timeSorted(AeltesteZuerst) #############");
+		boolean isAeltesteZuerst = true;
+		proVerwInstance.timeSorted(isAeltesteZuerst)
+				.forEach(System.out::println);
+
+		System.out.println();
+		System.out
+				.println("#### " + name + ": filtered(Ergebnis.xxx) #############");
+		proVerwInstance.filtered(Probe.Ergebnis.FRAGLICH)
+				.forEach(System.out::println);
+		proVerwInstance.filtered(Probe.Ergebnis.POSITIV)
+				.forEach(System.out::println);
+		proVerwInstance.filtered(Probe.Ergebnis.NEGATIV)
+				.forEach(System.out::println);
+
+		System.out.println();
+		System.out.println("##### " + name + ": removeProbe(id) #############");
+		System.out.println("remove id=0: " + proVerwInstance.removeProbe(0));
+		proVerwInstance.findAll()
+				.stream()
+				.findAny()
+				.ifPresentOrElse(p -> {
+					long id = p.getProbeId();
+					System.out.printf("remove id=%d: %s%n", id,
+							proVerwInstance.removeProbe(id));
+				}, () -> System.out.println("nothing to remove"));
+		proVerwInstance.findAll()
+				.forEach(System.out::println);
+
+		System.out.println();
+		int mw = 88;
+//		int mw = -88; // IllegalArgExc
+		System.out
+				.println("##### " + name + ": addMesswert(" + mw + ") #############");
+		System.out.println("ProbeId=" + probeOhneMw.getProbeId() + ": "
+				+ proVerwInstance.addMesswert(probeOhneMw.getProbeId(), mw));
+
+		Probe keineMwAenderung = proVerwInstance.findAll()
+				.get(0);
+		System.out.println("ProbeId=" + keineMwAenderung.getProbeId() + ": "
+				+ proVerwInstance.addMesswert(keineMwAenderung.getProbeId(), mw));
+
+		proVerwInstance.findAll()
+				.forEach(System.out::println);
+
+	}
+
+//	###################### Helper Meths #################################
+	private static void generateProben(ProbenVerwalten proVerwInstance) {
+		for (int i = 0; i < 10; i++) {
+			proVerwInstance.addProbe(generateRandomProbe());
+		}
+		probeOhneMw = new Probe(LocalDateTime.now());
+		proVerwInstance.addProbe(probeOhneMw);
+	}
+
+	private static Probe generateRandomProbe() {
+		LocalTime t = LocalTime.MIN;
+		int thisYear = LocalDate.now()
+				.getYear();
+		LocalDate d = LocalDate.ofEpochDay(ThreadLocalRandom.current()
+				.nextInt(365))
+				.withYear(thisYear);
+		return new Probe(LocalDateTime.of(d, t), ThreadLocalRandom.current()
+				.nextInt(Constants.MW_UPPER_BOUND + 1));
+	}
+
+	private static void alleProbenAusDbLoeschenUndIdGleich1(ProbenVerwalten db) {
+		db.truncateTableProbe();
 	}
 
 }

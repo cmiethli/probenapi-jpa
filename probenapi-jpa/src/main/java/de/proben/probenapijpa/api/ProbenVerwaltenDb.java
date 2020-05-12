@@ -73,8 +73,19 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 
 	@Override
 	public boolean removeProbe(long probeId) {
-		repository.deleteById(probeId);
-		return repository.existsById(probeId);
+		if (repository.existsById(probeId)) {
+			repository.deleteById(probeId);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	@Override
+	@Transactional
+	public void truncateTableProbe() {
+		Query q = em.createNativeQuery("TRUNCATE db_example.probe");
+		q.executeUpdate();
 	}
 
 	@Override
@@ -84,7 +95,7 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 		boolean isAdded = false;
 		if (probeOpt.isPresent()) {
 			Probe p = probeOpt.get();
-			if (p.getMesswert() instanceof Integer) {
+			if (p.getMesswert() != null) {
 // messwert schon vorhanden >> keine Aktion
 			} else {
 				p.setMesswert(messwert);
