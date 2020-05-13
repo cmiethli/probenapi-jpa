@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import de.proben.probenapijpa.persistence.Probe;
 import de.proben.probenapijpa.persistence.Probe.Ergebnis;
 import de.proben.probenapijpa.persistence.ProbeRepository;
+import de.proben.probenapijpa.util.Constants;
 
 /**
  * Database Implementierung von {@linkplain ProbenVerwalten}. Die Speicherung
@@ -84,7 +85,7 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 	@Override
 	@Transactional
 	public void truncateTableProbe() {
-		Query q = em.createNativeQuery("TRUNCATE db_example.probe");
+		Query q = em.createNativeQuery("TRUNCATE " + Constants.dbName + ".probe");
 		q.executeUpdate();
 	}
 
