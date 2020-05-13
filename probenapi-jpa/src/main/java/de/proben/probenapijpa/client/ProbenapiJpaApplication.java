@@ -52,57 +52,52 @@ public class ProbenapiJpaApplication {
 
 		String name = proVerwInstance.getClass()
 				.getSimpleName();
-		System.out.println("##### " + name + ": findAll() ##########");
+		log.info("##### " + name + ": findAll() ##########");
 		proVerwInstance.findAll()
-				.forEach(System.out::println);
+				.forEach(p -> log.info(p.toString()));
 
-		System.out.println();
-		System.out.println(
-				"##### " + name + ": timeSorted(AeltesteZuerst) #############");
+		log.info("");
+		log.info("##### " + name + ": timeSorted(AeltesteZuerst) #############");
 		boolean isAeltesteZuerst = true;
 		proVerwInstance.timeSorted(isAeltesteZuerst)
-				.forEach(System.out::println);
+				.forEach(p -> log.info(p.toString()));
 
-		System.out.println();
-		System.out
-				.println("#### " + name + ": filtered(Ergebnis.xxx) #############");
+		log.info("");
+		log.info("#### " + name + ": filtered(Ergebnis.xxx) #############");
 		proVerwInstance.filtered(Probe.Ergebnis.FRAGLICH)
-				.forEach(System.out::println);
+				.forEach(p -> log.info(p.toString()));
 		proVerwInstance.filtered(Probe.Ergebnis.POSITIV)
-				.forEach(System.out::println);
+				.forEach(p -> log.info(p.toString()));
 		proVerwInstance.filtered(Probe.Ergebnis.NEGATIV)
-				.forEach(System.out::println);
+				.forEach(p -> log.info(p.toString()));
 
-		System.out.println();
-		System.out.println("##### " + name + ": removeProbe(id) #############");
-		System.out.println("remove id=0: " + proVerwInstance.removeProbe(0));
+		log.info("");
+		log.info("##### " + name + ": removeProbe(id) #############");
+		log.info("remove id=0: " + proVerwInstance.removeProbe(0));
 		proVerwInstance.findAll()
 				.stream()
 				.findAny()
-				.ifPresentOrElse(p -> {
-					long id = p.getProbeId();
-					System.out.printf("remove id=%d: %s%n", id,
-							proVerwInstance.removeProbe(id));
-				}, () -> System.out.println("nothing to remove"));
+				.ifPresentOrElse(probe -> {
+					long id = probe.getProbeId();
+					log.info("remove id=%d: %s%n", id, proVerwInstance.removeProbe(id));
+				}, () -> log.info("nothing to remove"));
 		proVerwInstance.findAll()
-				.forEach(System.out::println);
+				.forEach(p -> log.info(p.toString()));
 
-		System.out.println();
+		log.info("");
 		int mw = 88;
 //		int mw = -88; // IllegalArgExc
-		System.out
-				.println("##### " + name + ": addMesswert(" + mw + ") #############");
-		System.out.println("ProbeId=" + probeOhneMw.getProbeId() + ": "
+		log.info("##### " + name + ": addMesswert(" + mw + ") #############");
+		log.info("ProbeId=" + probeOhneMw.getProbeId() + ": "
 				+ proVerwInstance.addMesswert(probeOhneMw.getProbeId(), mw));
 
 		Probe keineMwAenderung = proVerwInstance.findAll()
 				.get(0);
-		System.out.println("ProbeId=" + keineMwAenderung.getProbeId() + ": "
+		log.info("ProbeId=" + keineMwAenderung.getProbeId() + ": "
 				+ proVerwInstance.addMesswert(keineMwAenderung.getProbeId(), mw));
 
 		proVerwInstance.findAll()
-				.forEach(System.out::println);
-
+				.forEach(p -> log.info(p.toString()));
 	}
 
 //	###################### Helper Meths #################################

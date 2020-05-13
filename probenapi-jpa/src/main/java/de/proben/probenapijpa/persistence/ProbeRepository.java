@@ -17,11 +17,9 @@ public interface ProbeRepository extends CrudRepository<Probe, Long> {
 
 	List<Probe> findByErgebnis(Probe.Ergebnis ergebnis);
 
-//	@Query(value = "SELECT p FROM Probe p WHERE p.ergebnis= 'NEGATIV' ")
-//	List<Probe> findByErgebnisNegativ();
-
 	@Modifying
 	@Transactional
 	@Query("UPDATE Probe p SET p.messwert = :mw  WHERE p.id = :id")
 	int updateMesswert(@Param("mw") Integer mw, @Param("id") Long id);
+
 }
