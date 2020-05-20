@@ -27,22 +27,33 @@ import de.proben.probenapijpa.util.Constants;
 public class ProbenapiJpaApplication {
 
 	private static final Logger log = LoggerFactory
-			.getLogger(ProbenapiJpaApplication.class);
+		.getLogger(ProbenapiJpaApplication.class);
 	private static Probe probeOhneMw;
 
 	public static void main(String[] args) {
 		SpringApplication.run(ProbenapiJpaApplication.class);
 	}
 
+//	@Autowired
+//	@Qualifier("inMem")
+//	private ProbenVerwalten pvInMem;
+
 	@Autowired
 	@Qualifier("db")
-	private ProbenVerwalten pv;
+	private ProbenVerwalten pvDb;
 
 	@Bean
 	public CommandLineRunner demo(ProbeRepository repository) {
 		return (args) -> {
-			alleProbenAusDbLoeschenUndIdGleich1(pv);
-			testProbenVerwalten(pv);
+//			alleProbenAusDbLoeschenUndIdGleich1(pvInMem);
+//			testProbenVerwalten(pvInMem);
+
+//			System.out.println();
+//			System.out.println("######################################"
+//					+ "###############################################");
+
+			testProbenVerwalten(pvDb);
+			alleProbenAusDbLoeschenUndIdGleich1(pvDb);
 		};
 
 	}
@@ -51,53 +62,53 @@ public class ProbenapiJpaApplication {
 		generateProben(proVerwInstance);
 
 		String name = proVerwInstance.getClass()
-				.getSimpleName();
+			.getSimpleName();
 		log.info("##### " + name + ": findAll() ##########");
 		proVerwInstance.findAll()
-				.forEach(p -> log.info(p.toString()));
+			.forEach(p -> log.info(p.toString()));
 
 		log.info("");
 		log.info("##### " + name + ": timeSorted(AeltesteZuerst) #############");
 		boolean isAeltesteZuerst = true;
 		proVerwInstance.timeSorted(isAeltesteZuerst)
-				.forEach(p -> log.info(p.toString()));
+			.forEach(p -> log.info(p.toString()));
 
 		log.info("");
 		log.info("#### " + name + ": filtered(Ergebnis.xxx) #############");
 		proVerwInstance.filtered(Probe.Ergebnis.FRAGLICH)
-				.forEach(p -> log.info(p.toString()));
+			.forEach(p -> log.info(p.toString()));
 		proVerwInstance.filtered(Probe.Ergebnis.POSITIV)
-				.forEach(p -> log.info(p.toString()));
+			.forEach(p -> log.info(p.toString()));
 		proVerwInstance.filtered(Probe.Ergebnis.NEGATIV)
-				.forEach(p -> log.info(p.toString()));
+			.forEach(p -> log.info(p.toString()));
 
 		log.info("");
 		log.info("##### " + name + ": removeProbe(id) #############");
 		log.info("remove id=0: " + proVerwInstance.removeProbe(0));
 		proVerwInstance.findAll()
-				.stream()
-				.findAny()
-				.ifPresentOrElse(probe -> {
-					long id = probe.getProbeId();
-					log.info("remove id=%d: %s%n", id, proVerwInstance.removeProbe(id));
-				}, () -> log.info("nothing to remove"));
+			.stream()
+			.findAny()
+			.ifPresentOrElse(probe -> {
+				long id = probe.getProbeId();
+				log.info("remove id=%d: %s%n", id, proVerwInstance.removeProbe(id));
+			}, () -> log.info("nothing to remove"));
 		proVerwInstance.findAll()
-				.forEach(p -> log.info(p.toString()));
+			.forEach(p -> log.info(p.toString()));
 
 		log.info("");
 		int mw = 88;
 //		int mw = -88; // IllegalArgExc
 		log.info("##### " + name + ": addMesswert(" + mw + ") #############");
 		log.info("ProbeId=" + probeOhneMw.getProbeId() + ": "
-				+ proVerwInstance.addMesswert(probeOhneMw.getProbeId(), mw));
+			+ proVerwInstance.addMesswert(probeOhneMw.getProbeId(), mw));
 
 		Probe keineMwAenderung = proVerwInstance.findAll()
-				.get(0);
+			.get(0);
 		log.info("ProbeId=" + keineMwAenderung.getProbeId() + ": "
-				+ proVerwInstance.addMesswert(keineMwAenderung.getProbeId(), mw));
+			+ proVerwInstance.addMesswert(keineMwAenderung.getProbeId(), mw));
 
 		proVerwInstance.findAll()
-				.forEach(p -> log.info(p.toString()));
+			.forEach(p -> log.info(p.toString()));
 	}
 
 //	###################### Helper Meths #################################
@@ -112,12 +123,12 @@ public class ProbenapiJpaApplication {
 	private static Probe generateRandomProbe() {
 		LocalTime t = LocalTime.MIN;
 		int thisYear = LocalDate.now()
-				.getYear();
+			.getYear();
 		LocalDate d = LocalDate.ofEpochDay(ThreadLocalRandom.current()
-				.nextInt(365))
-				.withYear(thisYear);
+			.nextInt(365))
+			.withYear(thisYear);
 		return new Probe(LocalDateTime.of(d, t), ThreadLocalRandom.current()
-				.nextInt(Constants.MW_UPPER_BOUND + 1));
+			.nextInt(Constants.MW_UPPER_BOUND + 1));
 	}
 
 	private static void alleProbenAusDbLoeschenUndIdGleich1(ProbenVerwalten db) {
