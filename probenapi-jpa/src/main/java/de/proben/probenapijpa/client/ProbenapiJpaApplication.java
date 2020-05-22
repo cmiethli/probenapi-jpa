@@ -52,8 +52,11 @@ public class ProbenapiJpaApplication {
 //			System.out.println("######################################"
 //					+ "###############################################");
 
-			testProbenVerwalten(pvDb);
+//fuer h2 eigentlich nicht noetig, weil DB sowieso immer neu erstellt wird 
+//(und am Ende geloescht wird)
 			alleProbenAusDbLoeschenUndIdGleich1(pvDb);
+			testProbenVerwalten(pvDb);
+
 		};
 
 	}
