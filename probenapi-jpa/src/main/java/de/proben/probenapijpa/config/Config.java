@@ -7,7 +7,6 @@ import org.springframework.context.annotation.PropertySource;
 @Configuration
 // alle Componenten finden
 @ComponentScan(basePackages = { "de.proben.probenapijpa.api" })
-// TODO 2 Beans anstatt PropertySource auskommentieren
 //@PropertySource({
 //	"classpath:persistence-${persistenceTarget:mysql}.properties" })
 @PropertySource({ "classpath:persistence-${persistenceTarget:h2}.properties" })
