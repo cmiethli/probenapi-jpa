@@ -13,6 +13,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.hibernate.validator.constraints.Range;
+
 import de.proben.probenapijpa.util.Constants;
 
 @Entity
@@ -24,6 +26,8 @@ public class Probe {
 
 	@Column(columnDefinition = "TIMESTAMP", nullable = false)
 	private LocalDateTime zeitpunkt;
+//	Validation API benoetigt 
+	@Range(min = Constants.MW_LOWER_BOUND, max = Constants.MW_UPPER_BOUND)
 	private Integer messwert;
 	@Enumerated(EnumType.STRING)
 	@Column(length = 8) // FRAGLICH hat 8 Buchstaben!
@@ -38,8 +42,6 @@ public class Probe {
 	}
 
 	public Probe(LocalDateTime time, Integer messwert) {
-		testMesswert(messwert);
-
 		this.zeitpunkt = time;
 		this.messwert = messwert;
 		berechneErgebnis();
@@ -54,13 +56,13 @@ public class Probe {
 			formatKilosStr = null;
 		} else {
 			NumberFormat formatKilos = NumberFormat.getCompactNumberInstance(
-					new Locale("en", "US"), NumberFormat.Style.SHORT);
+				new Locale("en", "US"), NumberFormat.Style.SHORT);
 			formatKilos.setMaximumFractionDigits(1);
 			formatKilosStr = formatKilos.format(messwert);
 		}
 
 		return String.format("[id=%3d, zeit=%8s, messwert=%5s, ergebnis=%s", id,
-				zeitpunkt.format(formatter), formatKilosStr, ergebnis + "]");
+			zeitpunkt.format(formatter), formatKilosStr, ergebnis + "]");
 //		return "[id=" + probeId + ", zeit="
 //				+ zeitpunkt.truncatedTo(ChronoUnit.MINUTES)
 //						.toLocalDate()
@@ -70,7 +72,7 @@ public class Probe {
 	@Override
 	public int hashCode() {
 		return Long.valueOf(this.getProbeId())
-				.hashCode();
+			.hashCode();
 	}
 
 	@Override
@@ -109,7 +111,6 @@ public class Probe {
 	}
 
 	public void setMesswert(Integer messwert) {
-		testMesswert(messwert);
 		this.messwert = messwert;
 		berechneErgebnis();
 	}
@@ -132,18 +133,10 @@ public class Probe {
 		if (messwert > Constants.MW_UPPER_BOUND_FRAGLICH) {
 			ergebnis = Ergebnis.POSITIV;
 		} else if (messwert >= Constants.MW_LOWER_BOUND_FRAGLICH
-				&& messwert <= Constants.MW_UPPER_BOUND_FRAGLICH) {
+			&& messwert <= Constants.MW_UPPER_BOUND_FRAGLICH) {
 			ergebnis = Ergebnis.FRAGLICH;
 		} else {
 			ergebnis = Ergebnis.NEGATIV;
 		}
 	}
-
-	private void testMesswert(Integer messwert) {
-		if (messwert < Constants.MW_LOWER_BOUND
-				|| messwert > Constants.MW_UPPER_BOUND) {
-			throw new IllegalArgumentException("invalid messwert:" + messwert);
-		}
-	}
-
 }

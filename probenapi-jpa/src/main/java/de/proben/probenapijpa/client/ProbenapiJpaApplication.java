@@ -100,7 +100,7 @@ public class ProbenapiJpaApplication {
 
 		log.info("");
 		int mw = 88;
-//		int mw = -88; // IllegalArgExc
+//		int mw = -88; // ConstraintViolationException
 		log.info("##### " + name + ": addMesswert(" + mw + ") #############");
 		log.info("ProbeId=" + probeOhneMw.getProbeId() + ": "
 			+ proVerwInstance.addMesswert(probeOhneMw.getProbeId(), mw));

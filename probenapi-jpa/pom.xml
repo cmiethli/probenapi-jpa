@@ -62,6 +62,34 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
+
+		<!-- Validation API ("Meta API", ohne Implemetation) -->
+		<!--(ie @Min fuer field in Entity) -->
+		<dependency>
+			<groupId>javax.validation</groupId>
+			<artifactId>validation-api</artifactId>
+		</dependency>
+		<!-- Validation API Reference Implementation -->
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.hibernate.validator</groupId>
+			<artifactId>hibernate-validator-annotation-processor</artifactId>
+		</dependency>
+		<!-- Validation API: hiermit wird Exception erst geworfen... -->
+		<dependency>
+			<groupId>javax.el</groupId>
+			<artifactId>javax.el-api</artifactId>
+			<version>3.0.0</version>
+		</dependency>
+		<!-- Reference Implementation von EL-API -->
+		<dependency>
+			<groupId>org.glassfish.web</groupId>
+			<artifactId>javax.el</artifactId>
+			<version>2.2.6</version>
+		</dependency>
 	</dependencies>
 
 	<build>
