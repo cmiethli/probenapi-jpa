@@ -41,7 +41,7 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 	public List<Probe> findAll() {
 
 		TypedQuery<Probe> query = em.createQuery("SELECT k FROM Probe k",
-				Probe.class);
+			Probe.class);
 		return query.getResultList();
 //		return repository.findAll();
 	}
@@ -84,8 +84,9 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 
 	@Override
 	@Transactional
-	public void truncateTableProbe() {
-		Query q = em.createNativeQuery("TRUNCATE " + Constants.dbName + ".probe");
+	public void truncateTableProbe() { // TABLE fuer H2, in MariaDb optional
+		Query q = em
+			.createNativeQuery("TRUNCATE TABLE " + Constants.dbName + ".probe");
 		q.executeUpdate();
 	}
 
@@ -121,28 +122,28 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 
 //	######### Helper Meths ###########################
 	static List<Probe> timeSortedPackageScope(boolean isAeltesteZuerst,
-			List<Probe> proben) {
+		List<Probe> proben) {
 		Stream<Probe> probenSorted;
 		if (isAeltesteZuerst) {
 			probenSorted = proben.stream()
-					.sorted((p1, p2) -> p1.getZeitpunkt()
-							.compareTo(p2.getZeitpunkt()));
+				.sorted((p1, p2) -> p1.getZeitpunkt()
+					.compareTo(p2.getZeitpunkt()));
 		} else {
 			probenSorted = proben.stream()
-					.sorted((p1, p2) -> p2.getZeitpunkt()
-							.compareTo(p1.getZeitpunkt()));
+				.sorted((p1, p2) -> p2.getZeitpunkt()
+					.compareTo(p1.getZeitpunkt()));
 		}
 		return probenSorted.collect(Collectors.toList());
 	}
 
 	private boolean updateProbe(Integer messwert, long probeId,
-			Ergebnis ergebnis) {
+		Ergebnis ergebnis) {
 		Query probe = em
-				.createQuery("UPDATE Probe p " + "SET p.messwert = :mw, "
-						+ " p.ergebnis = :erg WHERE p.id = :id")
-				.setParameter("mw", messwert)
-				.setParameter("erg", ergebnis)
-				.setParameter("id", probeId);
+			.createQuery("UPDATE Probe p " + "SET p.messwert = :mw, "
+				+ " p.ergebnis = :erg WHERE p.id = :id")
+			.setParameter("mw", messwert)
+			.setParameter("erg", ergebnis)
+			.setParameter("id", probeId);
 		return probe.executeUpdate() == 1 ? true : false;
 	}
 
