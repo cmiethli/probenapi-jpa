@@ -11,6 +11,7 @@ import java.util.stream.Stream;
 import org.springframework.stereotype.Component;
 
 import de.proben.probenapijpa.persistence.Probe;
+import de.proben.probenapijpa.util.Konstanten;
 
 /**
  * InMemory Implementierung von {@linkplain ProbenVerwalten}. Die Speicherung
@@ -20,7 +21,7 @@ import de.proben.probenapijpa.persistence.Probe;
  * @author cmiethli
  *
  */
-@Component("inMem")
+@Component(Konstanten.IN_MEM_LIST_QUALIFIER)
 public class ProbenVerwaltenInMemList implements ProbenVerwalten {
 	private List<Probe> proben;
 

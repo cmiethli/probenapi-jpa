@@ -7,8 +7,8 @@ import java.util.Properties;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
-public final class Constants {
-	private Constants() {
+public final class Konstanten {
+	private Konstanten() {
 	}
 
 	public static final int MW_LOWER_BOUND = 0;
@@ -22,6 +22,9 @@ public final class Constants {
 
 	public static final int MW_LOWER_BOUND_NEGATIV = MW_LOWER_BOUND;
 	public static final int MW_UPPER_BOUND_NEGATIV = MW_LOWER_BOUND_FRAGLICH - 1;
+
+	public static final String DB_QUALIFIER = "db";
+	public static final String IN_MEM_LIST_QUALIFIER = "inMemList";
 
 //	Maven Properties 
 	public static final String dbName;

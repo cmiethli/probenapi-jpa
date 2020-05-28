@@ -18,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import de.proben.probenapijpa.persistence.Probe;
 import de.proben.probenapijpa.persistence.Probe.Ergebnis;
 import de.proben.probenapijpa.persistence.ProbeRepository;
-import de.proben.probenapijpa.util.Constants;
+import de.proben.probenapijpa.util.Konstanten;
 
 /**
  * Database Implementierung von {@linkplain ProbenVerwalten}. Die Speicherung
@@ -28,7 +28,7 @@ import de.proben.probenapijpa.util.Constants;
  *
  */
 
-@Component("db")
+@Component(Konstanten.DB_QUALIFIER)
 public class ProbenVerwaltenDb implements ProbenVerwalten {
 
 	@Autowired
@@ -86,7 +86,7 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 	@Transactional
 	public void truncateTableProbe() { // TABLE fuer H2, in MariaDb optional
 		Query q = em
-			.createNativeQuery("TRUNCATE TABLE " + Constants.dbName + ".probe");
+			.createNativeQuery("TRUNCATE TABLE " + Konstanten.dbName + ".probe");
 		q.executeUpdate();
 	}
 

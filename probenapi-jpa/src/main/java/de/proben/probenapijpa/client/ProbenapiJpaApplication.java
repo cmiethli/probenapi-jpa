@@ -19,7 +19,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import de.proben.probenapijpa.api.ProbenVerwalten;
 import de.proben.probenapijpa.persistence.Probe;
 import de.proben.probenapijpa.persistence.ProbeRepository;
-import de.proben.probenapijpa.util.Constants;
+import de.proben.probenapijpa.util.Konstanten;
 
 @SpringBootApplication(scanBasePackages = "de.proben.probenapijpa.config")
 @EnableJpaRepositories(basePackageClasses = ProbeRepository.class)
@@ -30,17 +30,17 @@ public class ProbenapiJpaApplication {
 		.getLogger(ProbenapiJpaApplication.class);
 	private static Probe probeOhneMw;
 
-	public static void main(String[] args) {
-		SpringApplication.run(ProbenapiJpaApplication.class);
-	}
-
 	@Autowired
-	@Qualifier("inMem")
+	@Qualifier(Konstanten.IN_MEM_LIST_QUALIFIER)
 	private ProbenVerwalten pvInMemList;
 
 	@Autowired
-	@Qualifier("db")
+	@Qualifier(Konstanten.DB_QUALIFIER)
 	private ProbenVerwalten pvDb;
+
+	public static void main(String[] args) {
+		SpringApplication.run(ProbenapiJpaApplication.class);
+	}
 
 	@Bean
 	public CommandLineRunner demo(ProbeRepository repository) {
@@ -54,14 +54,11 @@ public class ProbenapiJpaApplication {
 			System.out.println();
 			System.out.println("######################################"
 				+ "###############################################");
-
 //fuer h2 eigentlich nicht noetig, weil DB sowieso immer neu erstellt wird 
 //(und am Ende geloescht wird)
 			alleProbenAusDbLoeschenUndIdGleich1(pvDb);
 			testProbenVerwalten(pvDb);
-
 		};
-
 	}
 
 	private static void testProbenVerwalten(ProbenVerwalten proVerwInstance) {
@@ -140,11 +137,10 @@ public class ProbenapiJpaApplication {
 			.nextInt(365))
 			.withYear(thisYear);
 		return new Probe(LocalDateTime.of(d, t), ThreadLocalRandom.current()
-			.nextInt(Constants.MW_UPPER_BOUND + 1));
+			.nextInt(Konstanten.MW_UPPER_BOUND + 1));
 	}
 
 	private static void alleProbenAusDbLoeschenUndIdGleich1(ProbenVerwalten db) {
 		db.truncateTableProbe();
 	}
-
 }

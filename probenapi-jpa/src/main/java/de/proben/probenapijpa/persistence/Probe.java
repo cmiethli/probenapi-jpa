@@ -12,22 +12,25 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 
 import org.hibernate.validator.constraints.Range;
 
-import de.proben.probenapijpa.util.Constants;
+import de.proben.probenapijpa.util.Konstanten;
 
 @Entity
+@SequenceGenerator(name = "seq", initialValue = 1, allocationSize = 10)
 public class Probe {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+//	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+	private Long probeId;
 
 	@Column(columnDefinition = "TIMESTAMP", nullable = false)
 	private LocalDateTime zeitpunkt;
 //	Validation API benoetigt 
-	@Range(min = Constants.MW_LOWER_BOUND, max = Constants.MW_UPPER_BOUND)
+	@Range(min = Konstanten.MW_LOWER_BOUND, max = Konstanten.MW_UPPER_BOUND)
 	private Integer messwert;
 	@Enumerated(EnumType.STRING)
 	@Column(length = 8) // FRAGLICH hat 8 Buchstaben!
@@ -61,8 +64,8 @@ public class Probe {
 			formatKilosStr = formatKilos.format(messwert);
 		}
 
-		return String.format("[id=%3d, zeit=%8s, messwert=%5s, ergebnis=%s", id,
-			zeitpunkt.format(formatter), formatKilosStr, ergebnis + "]");
+		return String.format("[id=%3d, zeit=%8s, messwert=%5s, ergebnis=%s",
+			probeId, zeitpunkt.format(formatter), formatKilosStr, ergebnis + "]");
 //		return "[id=" + probeId + ", zeit="
 //				+ zeitpunkt.truncatedTo(ChronoUnit.MINUTES)
 //						.toLocalDate()
@@ -87,15 +90,15 @@ public class Probe {
 		} else {
 			return false;
 		}
-
 	}
 
+//	Getter+Setter	
 	public Long getProbeId() {
-		return id;
+		return probeId;
 	}
 
 	public void setProbeId(Long probeId) {
-		this.id = probeId;
+		this.probeId = probeId;
 	}
 
 	public LocalDateTime getZeitpunkt() {
@@ -130,10 +133,10 @@ public class Probe {
 
 //	##################### Helper Meths ##################
 	private void berechneErgebnis() {
-		if (messwert > Constants.MW_UPPER_BOUND_FRAGLICH) {
+		if (messwert > Konstanten.MW_UPPER_BOUND_FRAGLICH) {
 			ergebnis = Ergebnis.POSITIV;
-		} else if (messwert >= Constants.MW_LOWER_BOUND_FRAGLICH
-			&& messwert <= Constants.MW_UPPER_BOUND_FRAGLICH) {
+		} else if (messwert >= Konstanten.MW_LOWER_BOUND_FRAGLICH
+			&& messwert <= Konstanten.MW_UPPER_BOUND_FRAGLICH) {
 			ergebnis = Ergebnis.FRAGLICH;
 		} else {
 			ergebnis = Ergebnis.NEGATIV;
