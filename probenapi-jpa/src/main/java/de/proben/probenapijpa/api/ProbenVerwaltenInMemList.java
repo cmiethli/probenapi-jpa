@@ -3,6 +3,7 @@ package de.proben.probenapijpa.api;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.OptionalLong;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -20,10 +21,10 @@ import de.proben.probenapijpa.persistence.Probe;
  *
  */
 @Component("inMem")
-public class ProbenVerwaltenInMem implements ProbenVerwalten {
+public class ProbenVerwaltenInMemList implements ProbenVerwalten {
 	private List<Probe> proben;
 
-	ProbenVerwaltenInMem() {
+	ProbenVerwaltenInMemList() {
 //Concurrent weil: siehe ProVerwInMemTEST.java >> removeAllProben()
 		this.proben = new CopyOnWriteArrayList<Probe>();
 	}
@@ -41,22 +42,23 @@ public class ProbenVerwaltenInMem implements ProbenVerwalten {
 	@Override
 	public List<Probe> filtered(Probe.Ergebnis erg) {
 		return proben.stream()
-				.filter(p -> p.getErgebnis() == erg)
-				.collect(Collectors.toList());
+			.filter(p -> p.getErgebnis() == erg)
+			.collect(Collectors.toList());
 	}
 
 	@Override
 	public void addProbe(LocalDateTime zeitpunkt, int messwert) {
-		proben.add(new Probe(zeitpunkt, messwert));
+		addProbe(new Probe(zeitpunkt, messwert));
 	}
 
 	@Override
 	public void addProbe(LocalDateTime zeitpunkt) {
-		proben.add(new Probe(zeitpunkt));
+		addProbe(new Probe(zeitpunkt));
 	}
 
 	@Override
 	public void addProbe(Probe probe) {
+		setProbeId(probe);
 		proben.add(probe);
 	}
 
@@ -65,7 +67,7 @@ public class ProbenVerwaltenInMem implements ProbenVerwalten {
 		Optional<Probe> probeToRemove = getProbe(id);
 
 		return probeToRemove.isPresent() ? proben.remove(probeToRemove.get())
-				: false;
+			: false;
 	}
 
 	@Override
@@ -74,10 +76,10 @@ public class ProbenVerwaltenInMem implements ProbenVerwalten {
 		boolean isMesswertSet = false;
 		if (pr.isPresent()) {
 			if (pr.get()
-					.getMesswert() == null) {
+				.getMesswert() == null) {
 // Messwert noch nicht vorhanden
 				pr.get()
-						.setMesswert(messwert);
+					.setMesswert(messwert);
 				isMesswertSet = true;
 			} else {
 // Messwert schon vorhanden
@@ -87,34 +89,55 @@ public class ProbenVerwaltenInMem implements ProbenVerwalten {
 		return isMesswertSet;
 	}
 
-// ############# Helper Meths ####################
-	private Optional<Probe> getProbe(long id) {
-		return proben.parallelStream()
-				.filter(p -> p.getProbeId() == id)
-				.findAny();
-	}
-
-	static List<Probe> timeSortedPackageScope(boolean isAeltesteZuerst,
-			List<Probe> proben) {
-		Stream<Probe> probenSorted;
-		if (isAeltesteZuerst) {
-			probenSorted = proben.stream()
-					.sorted((p1, p2) -> p1.getZeitpunkt()
-							.compareTo(p2.getZeitpunkt()));
-		} else {
-			probenSorted = proben.stream()
-					.sorted((p1, p2) -> p2.getZeitpunkt()
-							.compareTo(p1.getZeitpunkt()));
-		}
-		return probenSorted.collect(Collectors.toList());
-	}
-
 	@Override
 	public boolean updateMesswert(long probeId, Integer messwert) {
-		return false;
+		Optional<Probe> pr = getProbe(probeId);
+		if (pr.isPresent()) {
+			pr.get()
+				.setMesswert(messwert);
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	@Override
 	public void truncateTableProbe() {
+		proben.clear();
+	}
+
+// ############# Helper Meths ####################
+	private void setProbeId(Probe pr) {
+		if (pr.getProbeId() == null) {
+			OptionalLong maxId = proben.parallelStream()
+				.mapToLong(p -> p.getProbeId())
+				.max();
+			if (maxId.isEmpty()) { // first Probe
+				pr.setProbeId(1L);
+			} else {
+				pr.setProbeId(maxId.getAsLong() + 1L);
+			}
+		}
+	}
+
+	private Optional<Probe> getProbe(long id) {
+		return proben.parallelStream()
+			.filter(p -> p.getProbeId() == id)
+			.findAny();
+	}
+
+	static List<Probe> timeSortedPackageScope(boolean isAeltesteZuerst,
+		List<Probe> proben) {
+		Stream<Probe> probenSorted;
+		if (isAeltesteZuerst) {
+			probenSorted = proben.stream()
+				.sorted((p1, p2) -> p1.getZeitpunkt()
+					.compareTo(p2.getZeitpunkt()));
+		} else {
+			probenSorted = proben.stream()
+				.sorted((p1, p2) -> p2.getZeitpunkt()
+					.compareTo(p1.getZeitpunkt()));
+		}
+		return probenSorted.collect(Collectors.toList());
 	}
 }

@@ -34,9 +34,9 @@ public class ProbenapiJpaApplication {
 		SpringApplication.run(ProbenapiJpaApplication.class);
 	}
 
-//	@Autowired
-//	@Qualifier("inMem")
-//	private ProbenVerwalten pvInMem;
+	@Autowired
+	@Qualifier("inMem")
+	private ProbenVerwalten pvInMemList;
 
 	@Autowired
 	@Qualifier("db")
@@ -45,12 +45,15 @@ public class ProbenapiJpaApplication {
 	@Bean
 	public CommandLineRunner demo(ProbeRepository repository) {
 		return (args) -> {
-//			alleProbenAusDbLoeschenUndIdGleich1(pvInMem);
-//			testProbenVerwalten(pvInMem);
 
-//			System.out.println();
-//			System.out.println("######################################"
-//					+ "###############################################");
+			testProbenVerwalten(pvInMemList);
+			alleProbenAusDbLoeschenUndIdGleich1(pvInMemList);
+			log.info("");
+			log.info("############  InMem Liste geloescht: " + pvInMemList.findAll());
+
+			System.out.println();
+			System.out.println("######################################"
+				+ "###############################################");
 
 //fuer h2 eigentlich nicht noetig, weil DB sowieso immer neu erstellt wird 
 //(und am Ende geloescht wird)
@@ -93,7 +96,7 @@ public class ProbenapiJpaApplication {
 			.findAny()
 			.ifPresentOrElse(probe -> {
 				long id = probe.getProbeId();
-				log.info("remove id=%d: %s%n", id, proVerwInstance.removeProbe(id));
+				log.info("remove id={}: {}", id, proVerwInstance.removeProbe(id));
 			}, () -> log.info("nothing to remove"));
 		proVerwInstance.findAll()
 			.forEach(p -> log.info(p.toString()));
@@ -110,6 +113,12 @@ public class ProbenapiJpaApplication {
 		log.info("ProbeId=" + keineMwAenderung.getProbeId() + ": "
 			+ proVerwInstance.addMesswert(keineMwAenderung.getProbeId(), mw));
 
+		int mw2 = mw / 2;
+		log.info("##### " + name + ": updateMesswert(" + mw2 + ") #############");
+		Probe mwUpdate = proVerwInstance.findAll()
+			.get(1);
+		log.info("ProbeId=" + mwUpdate.getProbeId() + ": "
+			+ proVerwInstance.updateMesswert(mwUpdate.getProbeId(), mw2));
 		proVerwInstance.findAll()
 			.forEach(p -> log.info(p.toString()));
 	}
