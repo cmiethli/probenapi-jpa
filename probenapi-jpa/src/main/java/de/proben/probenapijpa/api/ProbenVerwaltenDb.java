@@ -10,6 +10,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -82,12 +83,30 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 		}
 	}
 
+	@Autowired
+	DataSource ds;
+
 	@Override
 	@Transactional
 	public void truncateTableProbe() { // TABLE fuer H2, in MariaDb optional
 		Query q = em
-			.createNativeQuery("TRUNCATE TABLE " + Konstanten.dbName + ".probe");
+			.createNativeQuery("TRUNCATE TABLE " + Konstanten.DB_NAME + ".probe");
 		q.executeUpdate();
+
+//		XXX gibt bestimmt bessere Variante als ds.toString()
+		Query q2;
+		String dsName = ds.toString()
+			.toLowerCase();
+		if (dsName.contains("mysql")) {
+			q2 = em.createNativeQuery("UPDATE " + Konstanten.DB_NAME + "."
+				+ Konstanten.SEQ_GEN + " SET next_val = 1");
+		} else if (dsName.contains("h2")) {
+			q2 = em.createNativeQuery("ALTER SEQUENCE " + Konstanten.DB_NAME + "."
+				+ Konstanten.SEQ_GEN + " RESTART WITH 1");
+		} else {
+			throw new AssertionError("invalid database...");
+		}
+		q2.executeUpdate();
 	}
 
 	@Override

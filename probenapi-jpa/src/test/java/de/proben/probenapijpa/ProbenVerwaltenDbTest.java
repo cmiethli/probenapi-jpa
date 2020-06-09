@@ -10,13 +10,15 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
-import javax.validation.ConstraintViolationException;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.TransactionSystemException;
 
 import de.proben.probenapijpa.api.ProbenVerwalten;
 import de.proben.probenapijpa.apps.ForTests;
@@ -26,6 +28,9 @@ import de.proben.probenapijpa.util.Konstanten;
 
 @SpringBootTest(classes = ForTests.class)
 class ProbenVerwaltenDbTest {
+
+	@PersistenceContext
+	private EntityManager em;
 
 	@Autowired
 	@Qualifier(Konstanten.DB_QUALIFIER)
@@ -39,6 +44,8 @@ class ProbenVerwaltenDbTest {
 	private static int mwExc1 = Konstanten.MW_LOWER_BOUND - 1;
 	private static int mwExc2 = Konstanten.MW_UPPER_BOUND + 1;
 
+// p1 MUSS id=1 haben, wird beim ersten mal mit db.addProbe(p1) automatisch gesetzt
+// gleiche gilt fuer p2-p4
 	private static Probe p1 = new Probe(ldt.plusDays(1), mwNeg);
 	private static Probe p2 = new Probe(ldt, mwFrag);
 	private static Probe p3 = new Probe(ldt.plusDays(2), mwPos);
@@ -52,7 +59,7 @@ class ProbenVerwaltenDbTest {
 		db.addProbe(p2);
 		db.addProbe(p3);
 		db.addProbe(p4);
-		System.out.println(db.findAll());
+
 	}
 
 	@Test
@@ -112,15 +119,10 @@ class ProbenVerwaltenDbTest {
 
 	@Test
 	void removeProbeRichtig() {
-		Probe p = db.findAll()
-			.parallelStream()
-			.findAny()
-			.orElseThrow(IllegalArgumentException::new);
-		long id = p.getProbeId();
-		assertTrue(db.removeProbe(id));
-		assertFalse(db.removeProbe(id)); // p schon entfernt
+		assertTrue(db.removeProbe(1)); // p1
+		assertFalse(db.removeProbe(1)); // p1 schon entfernt
 		assertFalse(db.findAll()
-			.contains(p));
+			.contains(p1));
 	}
 
 	@Test
@@ -187,20 +189,16 @@ class ProbenVerwaltenDbTest {
 
 	@Test
 	void addProbeExc() {
-		assertThrows(ConstraintViolationException.class,
+		assertThrows(TransactionSystemException.class,
 			() -> db.addProbe(new Probe(ldt, mwExc1)));
-		assertThrows(ConstraintViolationException.class,
+		assertThrows(TransactionSystemException.class,
 			() -> db.addProbe(ldt, mwExc2));
 	}
 
 //	#######################################
 //	######### Helper Meths #################
 	private void removeAllProben() {
-//	id beginnt wieder bei 1
+//	id beginnt wieder bei id=1
 		db.truncateTableProbe();
-		p1.setProbeId(null);
-		p2.setProbeId(null);
-		p3.setProbeId(null);
-		p4.setProbeId(null);
 	}
 }

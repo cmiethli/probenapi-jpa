@@ -26,14 +26,16 @@ public final class Konstanten {
 	public static final String DB_QUALIFIER = "db";
 	public static final String IN_MEM_LIST_QUALIFIER = "inMemList";
 
+	public static final String SEQ_GEN = "seq_gen";
+
 //	Maven Properties 
-	public static final String dbName;
+	public static final String DB_NAME;
 	static {
 		Resource resource = new ClassPathResource("application.properties");
 		Properties props = new Properties();
 		try (InputStream inputStream = resource.getInputStream();) {
 			props.load(inputStream);
-			dbName = props.getProperty("dbName");
+			DB_NAME = props.getProperty("dbName");
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
