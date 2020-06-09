@@ -12,19 +12,18 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 
 import org.hibernate.validator.constraints.Range;
 
 import de.proben.probenapijpa.util.Konstanten;
 
 @Entity
-@SequenceGenerator(name = "seq", initialValue = 1, allocationSize = 10)
+//@SequenceGenerator(name = "seq", initialValue = 1, allocationSize = 10)
 public class Probe {
 
 	@Id
-//	@GeneratedValue(strategy = GenerationType.AUTO)
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+//	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "seq")
 	private Long probeId;
 
 	@Column(columnDefinition = "TIMESTAMP", nullable = false)
