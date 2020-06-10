@@ -49,6 +49,7 @@ public class ProbenVerwaltenInMemList implements ProbenVerwalten {
 
 	@Override
 	public void addProbe(LocalDateTime zeitpunkt, int messwert) {
+		testMesswert(messwert);
 		addProbe(new Probe(zeitpunkt, messwert));
 	}
 
@@ -59,6 +60,8 @@ public class ProbenVerwaltenInMemList implements ProbenVerwalten {
 
 	@Override
 	public void addProbe(Probe probe) {
+		Optional.ofNullable(probe.getMesswert())
+			.ifPresent(mw -> testMesswert(mw));
 		setProbeId(probe);
 		proben.add(probe);
 	}
@@ -73,6 +76,7 @@ public class ProbenVerwaltenInMemList implements ProbenVerwalten {
 
 	@Override
 	public boolean addMesswert(long probeId, Integer messwert) {
+		testMesswert(messwert);
 		Optional<Probe> pr = getProbe(probeId);
 		boolean isMesswertSet = false;
 		if (pr.isPresent()) {
@@ -92,6 +96,7 @@ public class ProbenVerwaltenInMemList implements ProbenVerwalten {
 
 	@Override
 	public boolean updateMesswert(long probeId, Integer messwert) {
+		testMesswert(messwert);
 		Optional<Probe> pr = getProbe(probeId);
 		if (pr.isPresent()) {
 			pr.get()
@@ -118,6 +123,13 @@ public class ProbenVerwaltenInMemList implements ProbenVerwalten {
 			} else {
 				pr.setProbeId(maxId.getAsLong() + 1L);
 			}
+		}
+	}
+
+	private void testMesswert(int messwert) {
+		if (messwert < Konstanten.MW_LOWER_BOUND
+			|| messwert > Konstanten.MW_UPPER_BOUND) {
+			throw new IllegalArgumentException("invalid messwert:" + messwert);
 		}
 	}
 

@@ -1,4 +1,4 @@
-package de.proben.probenapijpa.client;
+package de.proben.probenapijpa.apps;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,10 +24,10 @@ import de.proben.probenapijpa.util.Konstanten;
 @SpringBootApplication(scanBasePackages = "de.proben.probenapijpa.config")
 @EnableJpaRepositories(basePackageClasses = ProbeRepository.class)
 @EntityScan("de.proben.probenapijpa.persistence")
-public class ProbenapiJpaApplication {
+public class ClientApp {
 
 	private static final Logger log = LoggerFactory
-		.getLogger(ProbenapiJpaApplication.class);
+		.getLogger(ClientApp.class);
 	private static Probe probeOhneMw;
 
 	@Autowired
@@ -39,7 +39,7 @@ public class ProbenapiJpaApplication {
 	private ProbenVerwalten pvDb;
 
 	public static void main(String[] args) {
-		SpringApplication.run(ProbenapiJpaApplication.class);
+		SpringApplication.run(ClientApp.class);
 	}
 
 	@Bean
