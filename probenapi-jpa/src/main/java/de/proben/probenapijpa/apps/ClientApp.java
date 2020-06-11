@@ -141,6 +141,6 @@ public class ClientApp {
 	}
 
 	private static void alleProbenAusDbLoeschenUndIdGleich1(ProbenVerwalten db) {
-		db.truncateTableProbe();
+		db.clearProben();
 	}
 }

@@ -9,7 +9,7 @@ import de.proben.probenapijpa.persistence.Probe;
  * API zur Verwaltung von Proben. Es gibt zwei Implementierungen fuer die
  * Speicherung der Proben: <br>
  * 1) InMemory oder <br>
- * 2) in einer MySQL Database
+ * 2) in einer MySQL oder H2 Database
  * 
  * @author cmiethli
  *
@@ -97,5 +97,9 @@ public interface ProbenVerwalten {
 	 */
 	boolean updateMesswert(long probeId, Integer messwert);
 
-	void truncateTableProbe();
+	/**
+	 * Loescht alle Proben aus dem Speicher und setzt den Index probeId zurueck
+	 * auf 1.
+	 */
+	void clearProben();
 }

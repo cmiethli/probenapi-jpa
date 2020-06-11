@@ -108,7 +108,7 @@ public class ProbenVerwaltenInMemList implements ProbenVerwalten {
 	}
 
 	@Override
-	public void truncateTableProbe() {
+	public void clearProben() {
 		proben.clear();
 	}
 

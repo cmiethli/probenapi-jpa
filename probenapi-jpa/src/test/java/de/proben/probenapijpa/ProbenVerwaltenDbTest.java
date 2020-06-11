@@ -199,6 +199,6 @@ class ProbenVerwaltenDbTest {
 //	######### Helper Meths #################
 	private void removeAllProben() {
 //	id beginnt wieder bei id=1
-		db.truncateTableProbe();
+		db.clearProben();
 	}
 }

@@ -23,7 +23,7 @@ import de.proben.probenapijpa.util.Konstanten;
 
 /**
  * Database Implementierung von {@linkplain ProbenVerwalten}. Die Speicherung
- * der Proben laeuft ueber eine Datenbank in MySQL.
+ * der Proben laeuft ueber eine Datenbank in MySQL oder H2.
  * 
  * @author cmiethli
  *
@@ -88,7 +88,7 @@ public class ProbenVerwaltenDb implements ProbenVerwalten {
 
 	@Override
 	@Transactional
-	public void truncateTableProbe() { // TABLE fuer H2, in MariaDb optional
+	public void clearProben() { // TABLE fuer H2, in MariaDb optional
 		Query q = em
 			.createNativeQuery("TRUNCATE TABLE " + Konstanten.DB_NAME + ".probe");
 		q.executeUpdate();
