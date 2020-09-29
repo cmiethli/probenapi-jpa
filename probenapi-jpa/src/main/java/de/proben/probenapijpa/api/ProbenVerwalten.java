@@ -14,7 +14,7 @@ import de.proben.probenapijpa.persistence.Probe;
  * @author cmiethli
  *
  */
-//@Service
+// @Service //aa
 public interface ProbenVerwalten {
 	/**
 	 * Gibt alle abgespeicherten Proben zurueck.
@@ -28,8 +28,7 @@ public interface ProbenVerwalten {
 	 * 
 	 * @param isAeltesteZuerst true wenn erstes Element die aelteste Probe sein
 	 *                         soll, <br>
-	 *                         false wenn erstes Element die neuste Probe sein
-	 *                         soll,
+	 *                         false wenn erstes Element die neuste Probe sein soll,
 	 * @return List mit Elementtyp Probe
 	 */
 	List<Probe> timeSorted(boolean isAeltesteZuerst);
@@ -81,8 +80,8 @@ public interface ProbenVerwalten {
 	 * @param probeId  Eindeutige id der Probe
 	 * @param messwert messwert der hinzugefuegt werden soll
 	 * @return true falls die Probe noch keinen Messwert hatte<br>
-	 *         false falls die Proben schon einen Messwert hatte oder wenn die
-	 *         Probe nicht existiert
+	 *         false falls die Proben schon einen Messwert hatte oder wenn die Probe
+	 *         nicht existiert
 	 */
 	boolean addMesswert(long probeId, Integer messwert);
 
@@ -98,8 +97,8 @@ public interface ProbenVerwalten {
 	boolean updateMesswert(long probeId, Integer messwert);
 
 	/**
-	 * Loescht alle Proben aus dem Speicher und setzt den Index probeId zurueck
-	 * auf 1.
+	 * Loescht alle Proben aus dem Speicher und setzt den Index probeId zurueck auf
+	 * 1.
 	 */
 	void clearProben();
 }
